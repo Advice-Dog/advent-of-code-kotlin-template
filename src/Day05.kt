@@ -5,27 +5,45 @@ fun main() {
     fun part1(input: List<String>, print: Boolean = false): Int {
         val map = input.flatMap {
             it.toPointsList(skipDiagonal = true)
-        }.groupBy { it }.map { it.key to it.value.size }
+        }
 
-        val sorted = map.sortedWith(compareBy({ it.first.x }, { it.first.y }))
+        val group = map.groupBy { it }.map { it.key to it.value.size }
+
+
+        var find = map.filter { it.x == 466 && it.y == 235 }
+        println("$find -> ${find.size}")
+
+        var find2 = map.groupBy { it }.entries.find { it.key.x == 466 && it.key.y == 235 }
+        println("$find2 -> ${find2?.value?.size}")
+
+        val sorted = group.sortedWith(compareBy({ it.first.x }, { it.first.y }))
+
+        val xMax = group.maxOf { it.first.x }
+        val yMax = group.maxOf { it.first.y }
 
         if (print) {
-            val xMax = map.maxOf { it.first.x }
-            val yMax = map.maxOf { it.first.y }
+            val builder = StringBuilder()
 
-
-            println(sorted)
+            //println(sorted)
             for (y in 0..yMax) {
                 for (x in 0..xMax) {
-                    val element = map.find { it.first.x == x && it.first.y == y }
-                    if (element != null)
-                        print(element.second)
-                    else
-                        print(".")
+                    val element = group.find { it.first.x == x && it.first.y == y }
+                    val character = element?.second ?: "."
+
+                    //  print(character)
+                    builder.append(character)
                 }
-                println()
+                builder.appendLine()
+                //println()
+//                print(y)
             }
+
+
+            println(builder.toString())
+            // File("C:\\Users\\disen\\Documents\\GitHub\\advent-of-code-kotlin-template\\src\\day_05_result.txt").writeText(builder.toString())
         }
+
+
 //        for (point in Point(0, 0)..Point(9, 9)) {
 //            if (point.y == 0)
 //                println()
@@ -37,28 +55,109 @@ fun main() {
 //                print(".")
 //        }
 
-        val count = map.count { it.second >= 2 }
-        println("Count: $count")
-        println(map.count { it.second > 2 })
+        val frequencyMap: MutableMap<String, Int> = HashMap()
+
+
+//        val count = group.count { it.second > 1 }
+//        println("Count: $count")
+//
+//        var count2 = 0
+//
+        for (y in 0..yMax) {
+            for (x in 0..xMax) {
+                val s = "$x,$y"
+
+//                println("BEFORE; ${frequencyMap[s]}")
+                
+                val get = frequencyMap[s]
+                if (get != null) {
+//                    println("NOT NULL: $get")
+                    frequencyMap[s] = get + 1
+                } else {
+
+                    frequencyMap[s] = map.count { it.x == x && it.y == y }
+                }
+
+                println("$s -> ${frequencyMap[s]}")
+                //val element = map.filter { it.x == x && it.y == y }
+//                val element = map.count { it.x == x && it.y == y }
+//                if(element > 1) {
+//                    count2++
+//                    println(count2)
+//                }
+
+//                println(s)
+            }
+        }
+//
+//        println("FINAL: " + count2)
+
+        val count = frequencyMap.entries.count { it.value > 1 }
+
+        println("FINAL: $count")
         return count
     }
 
     fun part2(input: List<String>): Int {
         val map = input.flatMap {
             it.toPointsList(skipDiagonal = false)
-        }.groupBy { it }.map { it.key to it.value.size }
+        }
 
-        return map.count { it.second >= 2 }
+        val xMax = map.maxOf { it.x }
+        val yMax = map.maxOf { it.y }
+
+        val frequencyMap: MutableMap<String, Int> = HashMap()
+
+
+//        val count = group.count { it.second > 1 }
+//        println("Count: $count")
+//
+//        var count2 = 0
+//
+        for (y in 0..yMax) {
+            for (x in 0..xMax) {
+                val s = "$x,$y"
+
+//                println("BEFORE; ${frequencyMap[s]}")
+
+                val get = frequencyMap[s]
+                if (get != null) {
+//                    println("NOT NULL: $get")
+                    frequencyMap[s] = get + 1
+                } else {
+
+                    frequencyMap[s] = map.count { it.x == x && it.y == y }
+                }
+
+                println("$s -> ${frequencyMap[s]}")
+                //val element = map.filter { it.x == x && it.y == y }
+//                val element = map.count { it.x == x && it.y == y }
+//                if(element > 1) {
+//                    count2++
+//                    println(count2)
+//                }
+
+//                println(s)
+            }
+        }
+//
+//        println("FINAL: " + count2)
+
+        val count = frequencyMap.entries.count { it.value > 1 }
+
+        println("FINAL: " + count)
+        return count
     }
 
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day05_test")
     check(part1(testInput, print = true) == 5)
-    //check(part2(testInput) == 12)
+    check(part2(testInput) == 12)
 
     val input = readInput("Day05")
-    println(part1(input))
-    //println(part2(input))
+//    println(part1(input, print = false))
+    //println(part1_alt(input))
+    println(part2(input))
 }
 
 fun String.toPointsList(skipDiagonal: Boolean = false): List<Point> {
@@ -130,7 +229,13 @@ class PointIterator(startPoint: Point, private val endPointInclusive: Point, ste
     }
 }
 
-data class Point(val x: Int, val y: Int) : Comparable<Point> {
+data class Point(val x: Int, val y: Int, var id: Int = index++) : Comparable<Point> {
+
+    companion object {
+        var index = 0
+    }
+
+
     override fun compareTo(other: Point): Int {
         if (x < other.x || y < other.y)
             return -1
@@ -140,6 +245,18 @@ data class Point(val x: Int, val y: Int) : Comparable<Point> {
     }
 
     operator fun rangeTo(other: Point) = PointProgression(this, other)
+
+    override fun equals(other: Any?): Boolean {
+        if (other is Point)
+            return x == other.x && y == other.y
+        return false
+    }
+
+    override fun hashCode(): Int {
+        var result = x
+        result = 31 * result + y
+        return result
+    }
 }
 
 fun Point.next(x: Int, y: Int) = Point(this.x + x, this.y + y)
