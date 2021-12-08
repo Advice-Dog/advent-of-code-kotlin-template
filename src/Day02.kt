@@ -1,6 +1,3 @@
-import java.lang.Integer.max
-import java.lang.Integer.min
-
 fun main() {
 
     fun part1(input: List<Command>): Int {
