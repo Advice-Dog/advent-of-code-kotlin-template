@@ -1,87 +1,46 @@
 fun main() {
 
-    fun part1(input: List<String>): Int {
-        val list = input.first().toLanternfish().toMutableList()
-
-        println("Initial state: $list")
-
-        for (day in 1..80) {
-            val children = mutableListOf<Lanternfish>()
-
-            list.forEach {
-                it.tick()
-
-                if (it.hasChild) {
-                    children.add(Lanternfish())
-                    it.reset()
-                }
-            }
-
-            list.addAll(children)
-
-            println("After day $day: ${list.size} -> $list")
+    fun getLanternfishCount(input: List<String>, days: Int): Long {
+        val fishCount = mutableListOf<Long>()
+        for (i in 0 until 9) {
+            fishCount.add(0)
         }
 
-        val size = list.size
-        println("size: $size")
-        return size
+        val list = input.first().split(",").map { it.toInt() }
+
+        list.forEach {
+            fishCount[it]++
+        }
+
+        println("Initial state: (${fishCount.sum()}) ${fishCount.joinToString { it.toString() }}")
+        for (day in 1..days) {
+            val children = fishCount[0]
+            // add this amount of new fish to the end
+            fishCount.add(children)
+            // move this amount to 6 days from now
+            fishCount[7] += children
+            // clear the current day
+            fishCount.removeAt(0)
+            println("After day $day: (${fishCount.sum()}) ${fishCount.joinToString { it.toString() }}")
+        }
+
+        return fishCount.sum()
+    }
+
+    fun part1(input: List<String>): Long {
+        return getLanternfishCount(input, days = 80)
     }
 
     fun part2(input: List<String>): Long {
-        val list = input.first().toLanternfish().toMutableList()
-
-        println("Initial state: $list")
-
-        for (day in 1..256) {
-            val children = mutableListOf<Lanternfish>()
-
-            list.forEach {
-                it.tick()
-
-                if (it.hasChild) {
-                    children.add(Lanternfish())
-                    it.reset()
-                }
-            }
-
-            list.addAll(children)
-
-            println("After day $day: ${list.size} -> $list")
-        }
-
-        val size = list.size
-        println("size: $size")
-        return size
+        return getLanternfishCount(input, days = 256)
     }
 
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day06_test")
-    check(part1(testInput) == 5934)
+    check(part1(testInput) == 5934L)
     check(part2(testInput) == 26_984_457_539)
 
     val input = readInput("Day06")
     println(part1(input))
     println(part2(input))
-}
-
-fun String.toLanternfish(): List<Lanternfish> {
-    return split(",").map {
-        Lanternfish(it.toInt())
-    }
-}
-
-data class Lanternfish(var internal: Int = 8) {
-
-    val hasChild: Boolean
-        get() = internal == -1
-
-    fun tick() = internal--
-
-    fun reset() {
-        internal = 6
-    }
-
-    override fun toString(): String {
-        return internal.toString()
-    }
 }
