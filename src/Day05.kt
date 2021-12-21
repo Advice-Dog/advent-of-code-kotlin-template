@@ -150,11 +150,11 @@ fun main() {
     }
 
     // test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day05_test")
+    val testInput = getTestData("Day05")
     check(part1(testInput, print = true) == 5)
     check(part2(testInput) == 12)
 
-    val input = readInput("Day05")
+    val input = getData("Day05")
 //    println(part1(input, print = false))
     //println(part1_alt(input))
     println(part2(input))

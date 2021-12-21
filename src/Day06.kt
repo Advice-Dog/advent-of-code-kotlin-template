@@ -36,11 +36,11 @@ fun main() {
     }
 
     // test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day06_test")
+    val testInput = getTestData("Day06")
     check(part1(testInput) == 5934L)
     check(part2(testInput) == 26_984_457_539)
 
-    val input = readInput("Day06")
+    val input = getData("Day06")
     println(part1(input))
     println(part2(input))
 }

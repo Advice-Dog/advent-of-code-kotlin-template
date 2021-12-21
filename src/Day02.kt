@@ -34,12 +34,12 @@ fun main() {
     }
 
     // test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day02_test")
+    val testInput = getTestData("Day02")
         .map { it.toCommand() }
     check(part1(testInput) == 150)
     check(part2(testInput) == 900)
 
-    val input = readInput("Day02")
+    val input = getData("Day02")
         .map { it.toCommand() }
     println(part1(input))
     println(part2(input))
